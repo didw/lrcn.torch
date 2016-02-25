@@ -4,3 +4,10 @@
 ### Base code: 
 #### [imagenet-multiGPU.torch](https://github.com/soumith/imagenet-multiGPU.torch)
 #### [torch-rnn](https://github.com/jcjohnson/torch-rnn)
+
+## Implemented
+### action recognition on video
+
+## TODO
+### Image description
+### Video description
