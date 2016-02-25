@@ -7,7 +7,11 @@
 
 ## Implemented
 ### action recognition on video
+```
+th main.lua
+```
 
 ## TODO
 ### Image description
 ### Video description
+
