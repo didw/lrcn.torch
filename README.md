@@ -1,5 +1,6 @@
 ## Implementation LRCN on torch
-*Paper*: [Long-term Recurrent Convolutional Networks for Visual Recognition and Description] (http://arxiv.org/pdf/1411.4389v3.pdf)
+**Paper**: [Long-term Recurrent Convolutional Networks for Visual Recognition and Description] (http://arxiv.org/pdf/1411.4389v3.pdf)
+
 Implemented LRCN(CNN plus LSTM) on Torch to recognize action on Video. 
 Tested on cudnn only not sure it's working on cunn, nn. Also not tested on multi-GPU training.
 
