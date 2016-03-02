@@ -122,6 +122,7 @@ else
       paths = {paths.concat(opt.data, 'train')},
       loadSize = loadSize,
       sampleSize = sampleSize,
+      stride = opt.depthSize / 2,
       split = 100,
       verbose = true
    }
@@ -182,6 +183,7 @@ else
       paths = {paths.concat(opt.data, 'val')},
       loadSize = loadSize,
       sampleSize = sampleSize,
+      stride = opt.depthSize / 2,
       split = 0,
       verbose = true,
       forceClasses = trainLoader.classes -- force consistent class indices between trainLoader and testLoader

@@ -56,6 +56,10 @@ local initcheck = argcheck{
     help="a size to load the images to, initially",
     opt = true},
 
+   {name="stride",
+    type="number",
+    help="a size to stride"},
+
    {name="forceClasses",
     type="table",
     help="If you want this loader to map certain classes to certain indices, "
@@ -163,7 +167,8 @@ function dataset:__init(...)
    for i, class in ipairs(self.classes) do
       -- iterate over classPaths
       for j,path in ipairs(classPaths[i]) do
-         for pref=16,600,8 do
+         if self.stride == 0 then self.stride = 1 end
+         for pref=16,600,self.stride do
             local command = find .. ' "' .. path .. '" ' .. findOptions 
                .. string.format("%04d", pref) .. extension .. '" ' .. ' >>"'
                .. classFindFiles[i] .. '" \n'

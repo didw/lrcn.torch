@@ -94,6 +94,6 @@ function testBatch(inputsCPU, labelsCPU)
       end
    end
    if batchNumber % 1024 == 0 then
-      print(('Epoch: Testing: [%d][%d/%d]'):format(epoch, batchNumber, nTest))
+      print(('Epoch: Testing: [%d][%d/%d], accuracy: %.2f'):format(epoch, batchNumber, nTest, top1_center*100/batchNumber))
    end
 end
