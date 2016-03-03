@@ -182,15 +182,15 @@ function trainBatch(inputsCPU, labelsCPU)
    local top1 = 0
    do
       local _,prediction_sorted = outputs:float():sort(3, true) -- descending
-      for i=1,opt.batchSize do
-         for j=1,opt.depthSize do
+      for i=1,N do
+         for j=1,T do
             if prediction_sorted[i][j][1] == labelsCPU[i][j] then
                top1_epoch = top1_epoch + 1;
                top1 = top1 + 1
             end
          end
       end
-      top1 = top1 * 100 / (opt.batchSize * opt.depthSize);
+      top1 = top1 * 100 / (N * T);
    end
    -- Calculate top-1 error, and print information
    print(('Epoch: [%d][%d/%d]\tTime %.3f Err %.4f Top1-%%: %.2f(%.2f) LR %.0e DataLoadingTime %.3f'):format(

@@ -30,8 +30,8 @@ function createModel(nGPU)
 
    classifier:add(nn.Dropout(0.5))
    classifier:add(nn.Linear(256*6*6, 4096))                     -- 37,748,736
-   classifier:add(nn.BatchNormalization(4096, 1e-3))
-   classifier:add(nn.ReLU())
+   --classifier:add(nn.BatchNormalization(4096, 1e-3))
+   --classifier:add(nn.ReLU())
 
    --classifier:add(nn.Dropout(0.5))
    --classifier:add(nn.Linear(4096, 4096))                        -- 16,777,216
@@ -43,7 +43,6 @@ function createModel(nGPU)
 
    classifier:cuda()
 
-   --local model = nn.Sequential():add(features):add(classifier)
    local model = nn.Sequential():add(features):add(classifier)
    model.imageSize = 256
    model.imageCrop = 224

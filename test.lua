@@ -55,10 +55,7 @@ function test()
                           .. 'average loss (per batch): %.2f \t '
                           .. 'accuracy [Center](%%):\t top-1 %.2f\t ',
                        epoch, timer:time().real, loss, top1_center))
-
    print('\n')
-
-
 end -- of test()
 -----------------------------------------------------------------------------
 local inputs = torch.CudaTensor()
@@ -82,14 +79,14 @@ function testBatch(inputsCPU, labelsCPU)
    loss = loss + err
 
    local _, pred_sorted = pred:sort(3, true)
-   for i=1,pred:size(1) do
-      local g = labelsCPU[i][opt.depthSize]
-      for j=1,pred:size(2) do
+   for i=1,N do
+      for j=1,T do
          if pred_sorted[i][j][1] == labelsCPU[i][j] then
             top1_frame = top1_frame + 1
          end
       end
-      if pred_sorted[i][opt.depthSize][1] == g then
+      local g = labelsCPU[i][T]
+      if pred_sorted[i][T][1] == g then
          top1_center = top1_center + 1
       end
    end

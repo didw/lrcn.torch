@@ -42,7 +42,7 @@ end
 local function getPath(path, idx)
    local res="";
    local i = 0
-   for splt in string.gmatch(path, "([^.]+)") do        
+   for splt in string.gmatch(path, "([^.]+)") do
       if i == 1 then
          splt = string.format( "%04d", splt - idx )
       end
@@ -92,17 +92,17 @@ local trainHook = function(self, path, depth)
       -- do random crop
       local oW = sampleSize[3]
       local oH = sampleSize[2]
-      local h1 = math.ceil(torch.uniform(1e-2, iH-oH))
       local w1 = math.ceil(torch.uniform(1e-2, iW-oW))
+      local h1 = math.ceil(torch.uniform(1e-2, iH-oH))
       local out = image.crop(input, w1, h1, w1 + oW, h1 + oH)
       assert(out:size(3) == oW)
       assert(out:size(2) == oH)
       -- do hflip with probability 0.5
       if torch.uniform() > 0.5 then out = image.hflip(out) end
       -- mean/std
-      for i=1,3 do -- channels
-         if mean then out[{{i},{},{}}]:add(-mean[i]) end
-         if std then out[{{i},{},{}}]:div(std[i]) end
+      for c=1,3 do -- channels
+         if mean then out[{{c},{},{}}]:add(-mean[c]) end
+         if std then out[{{c},{},{}}]:div(std[c]) end
       end
       table.insert(outs, out)
    end
@@ -148,22 +148,22 @@ end
 --]]
 
 -- function to load the image
-testHook = function(self, path, depth)
+local testHook = function(self, path, depth)
    collectgarbage()
    local outs = {}
    for i=depth-1,0,-1 do
-      local input = loadImage(path)
-      local oH = sampleSize[2]
-      local oW = sampleSize[3]
+      local input = loadImage(getPath(path, i))
       local iW = input:size(3)
       local iH = input:size(2)
+      local oW = sampleSize[3]
+      local oH = sampleSize[2]
       local w1 = math.ceil((iW-oW)/2)
       local h1 = math.ceil((iH-oH)/2)
       local out = image.crop(input, w1, h1, w1+oW, h1+oH) -- center patch
       -- mean/std
-      for i=1,3 do -- channels
-         if mean then out[{{i},{},{}}]:add(-mean[i]) end
-         if std then out[{{i},{},{}}]:div(std[i]) end
+      for c=1,3 do -- channels
+         if mean then out[{{c},{},{}}]:add(-mean[c]) end
+         if std then out[{{c},{},{}}]:div(std[c]) end
       end
       table.insert(outs, out)
    end
