@@ -23,7 +23,7 @@ function M.parse(arg)
     cmd:option('-nGPU',               1, 'Number of GPUs to use by default')
     cmd:option('-backend',      'cudnn', 'Options: cudnn | ccn2 | cunn')
     ------------- Data options ------------------------
-    cmd:option('-nDonkeys',            1,    'number of donkeys to initialize (data loading threads)')
+    cmd:option('-nDonkeys',            2,    'number of donkeys to initialize (data loading threads)')
     cmd:option('-imageSize',         256,    'Smallest side of the resized image')
     cmd:option('-cropSize',          224,    'Height and Width of image crop to be used as input layer')
     cmd:option('-cnnSize',          4096,    'size of result of CNN')

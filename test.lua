@@ -11,6 +11,7 @@ testLogger = optim.Logger(paths.concat(opt.save, 'test.log'))
 local batchNumber
 local top1_frame, top1_center, loss
 local timer = torch.Timer()
+local testStride = 10 -- run validation fully when stride is 1
 
 function test()
    print('==> doing epoch on validation data:')
@@ -26,8 +27,7 @@ function test()
    top1_center = 0
    top1_frame = 0
    loss = 0
-   local stride = 10 -- run validation fully when stride is 1
-   for i=1,nTest/opt.batchSize,stride do -- nTest is set in 1_data.lua
+   for i=1,nTest/opt.batchSize,testStride do -- nTest is set in 1_data.lua
       local indexStart = (i-1) * opt.batchSize + 1
       local indexEnd = (indexStart + opt.batchSize - 1)
       donkeys:addjob(
@@ -47,8 +47,8 @@ function test()
    donkeys:synchronize()
    cutorch.synchronize()
 
-   top1_center = top1_center * 100 / (nTest*stride)
-   top1_frame = top1_frame * 100 / (nTest*opt.depthSize*stride)
+   top1_center = top1_center * 100 / (nTest*testStride)
+   top1_frame = top1_frame * 100 / (nTest*opt.depthSize*testStride)
    loss = loss / (nTest/opt.batchSize) -- because loss is calculated per batch
    testLogger:add{
       ['% top1 frame /'] = top1_frame,
@@ -94,12 +94,12 @@ function testBatch(inputsCPU, labelsCPU)
          top1_center = top1_center + 1
       end
    end
-   if batchNumber % 1024 == 0 then
+   if batchNumber % 128 == 0 then
       if opt.debug then
          print('label: ', labelsCPU[1][1])
          print('score: ', pred[1][1][labelsCPU[1][1]], 'mean: ', pred[1][1]:mean())
          print('pred: ', pred_sorted[1][1][1], pred_sorted[1][1][2], pred_sorted[1][1][3], pred_sorted[1][1][4], pred_sorted[1][1][5])
       end
-      print(('Epoch: Testing: [%d][%d/%d], top1: %d, batchN: %d'):format(epoch, batchNumber, nTest, top1_center, batchNumber))
+      print(('Epoch: Testing: [%d][%d/%d], accuracy: %.2f'):format(epoch, batchNumber, (nTest*testStride), (top1_center/batchNumber)))
    end
 end
