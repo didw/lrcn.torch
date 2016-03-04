@@ -95,11 +95,11 @@ function testBatch(inputsCPU, labelsCPU)
       end
    end
    if batchNumber % 128 == 0 then
-      if opt.debug then
+      if opt.debug == true then
          print('label: ', labelsCPU[1][1])
          print('score: ', pred[1][1][labelsCPU[1][1]], 'mean: ', pred[1][1]:mean())
          print('pred: ', pred_sorted[1][1][1], pred_sorted[1][1][2], pred_sorted[1][1][3], pred_sorted[1][1][4], pred_sorted[1][1][5])
       end
-      print(('Epoch: Testing: [%d][%d/%d], accuracy: %.2f'):format(epoch, batchNumber, (nTest*testStride), (top1_center/batchNumber)))
+      print(('Epoch: Testing: [%d][%d/%d], frame: %.2f, video: %.2f'):format(epoch, batchNumber, (nTest*testStride), (top1_frame*100/T/batchNumber), (top1_center*100/batchNumber)))
    end
 end

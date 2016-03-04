@@ -405,7 +405,7 @@ function dataset:get(i1, i2, depth)
       local out = self:sampleHookTest(imgpath, depth)
       table.insert(dataTable, out)
       local classes = {}
-      if opt.debug then
+      if opt.debug == true then
          if indices[i] % 128 == 0 then
             print(self.imageClass[indices[i]], imgpath)
          end
