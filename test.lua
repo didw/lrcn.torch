@@ -47,8 +47,8 @@ function test()
    donkeys:synchronize()
    cutorch.synchronize()
 
-   top1_center = top1_center * 100 / (nTest*testStride)
-   top1_frame = top1_frame * 100 / (nTest*opt.depthSize*testStride)
+   top1_center = top1_center * 100 / (nTest/testStride)
+   top1_frame = top1_frame * 100 / (nTest*opt.depthSize/testStride)
    loss = loss / (nTest/opt.batchSize) -- because loss is calculated per batch
    testLogger:add{
       ['% top1 frame /'] = top1_frame,
