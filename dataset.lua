@@ -60,6 +60,10 @@ local initcheck = argcheck{
     type="number",
     help="a size to stride"},
 
+   {name="depth",
+    type="number",
+    help="a size to stride"},
+
    {name="forceClasses",
     type="table",
     help="If you want this loader to map certain classes to certain indices, "
@@ -82,14 +86,12 @@ local initcheck = argcheck{
 }
 
 function dataset:__init(...)
-
    -- argcheck
    local args =  initcheck(...)
    print(args)
    for k,v in pairs(args) do self[k] = v end
 
    if not self.loadSize then self.loadSize = self.sampleSize; end
-
    if not self.sampleHookTrain then self.sampleHookTrain = self.defaultSampleHook end
    if not self.sampleHookTest then self.sampleHookTest = self.defaultSampleHook end
 
@@ -161,24 +163,33 @@ function dataset:__init(...)
    end
    local combinedFindList = os.tmpname();
 
-   local tmpfile = os.tmpname()
-   local tmphandle = assert(io.open(tmpfile, 'w'))
    -- iterate over classes
+   if self.stride == 0 then self.stride = 1 end
    for i, class in ipairs(self.classes) do
       -- iterate over classPaths
-      for j,path in ipairs(classPaths[i]) do
-         if self.stride == 0 then self.stride = 1 end
-         for pref=16,600,self.stride do
+      local tmpfile = os.tmpname()
+      local tmphandle = assert(io.open(tmpfile, 'w'))
+      for j, path in ipairs(classPaths[i]) do
+         print(path)
+         -- When insert variable it works wrong. Didn't figured out yet.
+         -- for pref=self.depth,600,self.stride do
+         for pref=16,600,8 do
             local command = find .. ' "' .. path .. '" ' .. findOptions 
                .. string.format("%04d", pref) .. extension .. '" ' .. ' >>"'
                .. classFindFiles[i] .. '" \n'
             tmphandle:write(command)
          end
+         --[[local command = find .. ' "' .. path .. '" ' .. findOptions 
+            .. "*" .. extension .. '" ' .. ' >>"'
+            .. classFindFiles[i] .. '" \n'
+         tmphandle:write(command)]]
       end
+      io.close(tmphandle)
+      os.execute('bash ' .. tmpfile)
+      print('class: ', i, classPaths[i][1],
+        sys.fexecute(wc .. " -l '" .. classFindFiles[i] .. "' |" .. cut .. " -f1 -d' '"))
+      os.execute('rm -f ' .. tmpfile)
    end
-   io.close(tmphandle)
-   os.execute('bash ' .. tmpfile)
-   os.execute('rm -f ' .. tmpfile)
 
    print('now combine all the files to a single large file')
    local tmpfile = os.tmpname()
@@ -200,6 +211,7 @@ function dataset:__init(...)
    local length = tonumber(sys.fexecute(wc .. " -l '"
                                            .. combinedFindList .. "' |"
                                            .. cut .. " -f1 -d' '"))
+   print('total length: ' .. length)
    assert(length > 0, "Could not find any image file in the given input paths")
    assert(maxPathLength > 0, "paths of files are length 0?")
    self.imagePath:resize(length, maxPathLength):fill(0)
@@ -317,6 +329,13 @@ function dataset:getByClass(class, depth)
    return self:sampleHookTrain(imgpath, depth)
 end
 
+-- getByClass
+function dataset:getByClass2(class, depth)
+   local index = math.max(1, math.ceil(torch.uniform() * self.classListTest[class]:nElement()))
+   local imgpath = ffi.string(torch.data(self.imagePath[self.classListTest[class][index]]))
+   return self:sampleHookTest(imgpath, depth)
+end
+
 -- converts a table of samples (and corresponding labels) to a clean tensor
 local function tableToOutput(self, dataTable, scalarTable)
    local data, scalarLabels, labels
@@ -354,6 +373,25 @@ function dataset:sample(quantity, depth)
    return data, scalarLabels
 end
 
+-- sampler, samples from the training set.
+function dataset:sample2(quantity, depth)
+   assert(quantity)
+   local dataTable = {}
+   local scalarTable = {}
+   for i=1,quantity do
+      local class = torch.random(1, #self.classes)
+      local classes = {}
+      local out = self:getByClass2(class, depth)
+      table.insert(dataTable, out)
+      for j=1,depth do
+         table.insert(classes, class)
+      end
+      table.insert(scalarTable, classes)
+   end
+   local data, scalarLabels = tableToOutput(self, dataTable, scalarTable)
+   return data, scalarLabels
+end
+
 function dataset:get(i1, i2, depth)
    local indices = torch.range(i1, i2);
    local quantity = i2 - i1 + 1;
@@ -367,6 +405,11 @@ function dataset:get(i1, i2, depth)
       local out = self:sampleHookTest(imgpath, depth)
       table.insert(dataTable, out)
       local classes = {}
+      if opt.debug then
+         if indices[i] % 128 == 0 then
+            print(self.imageClass[indices[i]], imgpath)
+         end
+      end
       for j=1,depth do
          table.insert(classes, self.imageClass[indices[i]])
       end

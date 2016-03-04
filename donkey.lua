@@ -123,6 +123,7 @@ else
       loadSize = loadSize,
       sampleSize = sampleSize,
       stride = opt.depthSize / 2,
+      depth = opt.depthSize,
       split = 100,
       verbose = true
    }
@@ -184,6 +185,7 @@ else
       loadSize = loadSize,
       sampleSize = sampleSize,
       stride = opt.depthSize / 2,
+      depth = opt.depthSize,
       split = 0,
       verbose = true,
       forceClasses = trainLoader.classes -- force consistent class indices between trainLoader and testLoader
