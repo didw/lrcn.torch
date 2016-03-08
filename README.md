@@ -17,6 +17,7 @@ In the paper [UCF-101](http://crcv.ucf.edu/data/UCF101.php) data is used. You ca
 - cudnn `luarocks intall cudnn`
 
 ### Run
+Setting up some parameters in `opt.lua`. And run below command.
 ```
 th main.lua
 ```
