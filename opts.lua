@@ -17,7 +17,7 @@ function M.parse(arg)
     ------------ General options --------------------
 
     cmd:option('-cache', './imagenet/checkpoint/', 'subdirectory in which to save/log experiments')
-    cmd:option('-data', '../../data/UCF-101_RGB', 'Home of ImageNet dataset')
+    cmd:option('-data', '../../data/UCF101', 'Home of ImageNet dataset')
     cmd:option('-manualSeed',         2, 'Manually set RNG seed')
     cmd:option('-GPU',                1, 'Default preferred GPU')
     cmd:option('-nGPU',               1, 'Number of GPUs to use by default')
@@ -41,7 +41,7 @@ function M.parse(arg)
     cmd:option('-momentum',        0.9,  'momentum')
     cmd:option('-weightDecay',     5e-4, 'weight decay')
     ---------- Model options ----------------------------------
-    cmd:option('-netType',     'alexnetowtbn_for_lstm', 'Options: alexnet | overfeat | alexnetowtbn | vgg | googlenet')
+    cmd:option('-netType',     'alexnetowtbn_for_lstm', 'Options: alexnetowtbn_for_lstm')
     cmd:option('-retrain',     'none', 'provide path to model to retrain with')
     cmd:option('-optimState',  'none', 'provide path to an optimState to reload from')
     cmd:option('-debug',        false, 'debug mode')
