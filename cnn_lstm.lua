@@ -32,7 +32,7 @@ function AL:__init(opt)
   
   self.net:add(self.cnn_view1)
   local model
-  self.pretrain, model = createModel(opt.nGPU) 
+  self.pretrain, model = createModel(opt.nGPU)
   self.net:add(model)
   self.net:add(self.cnn_view2)
   for i = 1, self.num_layers do

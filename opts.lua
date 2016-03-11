@@ -42,7 +42,7 @@ function M.parse(arg)
     cmd:option('-momentum',        0.9,  'momentum')
     cmd:option('-weightDecay',     5e-4, 'weight decay')
     ---------- Model options ----------------------------------
-    cmd:option('-netType',     'alexnet_pretrained', 'Options: alexnetowtbn_for_lstm | alexnet_pretrained(pretrained caffe model)')
+    cmd:option('-netType',     'alexnet_pretrained', 'Options: alexnetowtbn_for_lstm | alexnet_pretrained(pretrained caffe model) | vgg_16_pretrain(pretrained caffe model)')
     cmd:option('-retrain',     'none', 'provide path to model to retrain with')
     cmd:option('-optimState',  'none', 'provide path to an optimState to reload from')
     cmd:option('-debug',        false, 'debug mode')

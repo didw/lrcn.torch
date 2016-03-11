@@ -9,7 +9,7 @@
 require 'nn'
 require 'cunn'
 require 'optim'
-require 'alexnet_lstm'
+require 'cnn_lstm'
 
 --[[
    1. Create Model

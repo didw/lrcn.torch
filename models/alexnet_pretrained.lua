@@ -21,7 +21,7 @@ function loadPremodel()
       print 'AlexNet only support cudnn and cnn2'
       exit(1)   
    end
-   for i=24,23,-1 do
+   for i=24,18,-1 do
       pretrain:remove(i)
    end
    return pretrain
