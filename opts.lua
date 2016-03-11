@@ -17,8 +17,8 @@ function M.parse(arg)
     ------------ General options --------------------
 
     cmd:option('-cache', './imagenet/checkpoint/', 'subdirectory in which to save/log experiments')
-    cmd:option('-data', '../../data/UCF-101_RGB', 'root of database')
-    cmd:option('-dataType', 'jpg', 'jpg | avi')
+    cmd:option('-dataType', 'avi', 'jpg | avi')
+    cmd:option('-data', '../../data/UCF-101', 'Home of ImageNet dataset')
     cmd:option('-manualSeed',         2, 'Manually set RNG seed')
     cmd:option('-GPU',                1, 'Default preferred GPU')
     cmd:option('-nGPU',               1, 'Number of GPUs to use by default')
