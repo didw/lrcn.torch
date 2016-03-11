@@ -7,6 +7,7 @@
 --  of patent rights can be found in the PATENTS file in the same directory.
 --
 require 'image'
+require 'ffmpeg'
 paths.dofile('dataset.lua')
 paths.dofile('util.lua')
 
@@ -56,12 +57,17 @@ local function getPath(path, idx)
    return res
 end
 
-local function loadVideo(path_base)
+local function loadVideo(videopath, depth)
    inputs = {}
-   for i=15,0 do
-      local path = getPath(path_base, i)
-      local input = image.load(path, 3, 'float')
+   local vid = ffmpeg.Video{path=videopath, silent=true}
+   local frames = vid:totensor{}
+   if frames:size(1) < depth then
+      print(videopath, frames:size(1))
+   end
+   local idx = torch.random(1, frames:size(1)-depth+1)
+   for i=idx,idx+depth-1 do
       -- find the smaller dimension, and resize it to loadSize (while keeping aspect ratio)
+      local input = frames[i]
       if input:size(3) < input:size(2) then
          input = image.scale(input, loadSize[2], loadSize[3] * input:size(2) / input:size(3))
       else
@@ -84,8 +90,17 @@ local mean,std
 local trainHook = function(self, path, depth)
    collectgarbage()
    local outs = {}
-   for i=depth-1,0,-1 do
-      local input = loadImage(getPath(path, i))
+   local inputs
+   if opt.dataType == 'avi' then
+      inputs = loadVideo(path, depth)
+   end
+   for i=1,depth do
+      local input
+      if opt.dataType == 'avi' then 
+         input = inputs[i]
+      elseif opt.dataType == 'jpg' then
+         input = loadImage(getPath(path, depth - i))
+      end
       local iW = input:size(3)
       local iH = input:size(2)
    
@@ -152,8 +167,17 @@ end
 local testHook = function(self, path, depth)
    collectgarbage()
    local outs = {}
-   for i=depth-1,0,-1 do
-      local input = loadImage(getPath(path, i))
+   local inputs
+   if opt.dataType == 'avi' then
+      inputs = loadVideo(path, depth)
+   end
+   for i=1,depth do
+      local input
+      if opt.dataTeyp == 'avi' then
+         input = inputs[i]
+      elseif opt.dataType == 'jpg' then
+         input = loadImage(getPath(path, depth-i))
+      end
       local iW = input:size(3)
       local iH = input:size(2)
       local oW = sampleSize[3]

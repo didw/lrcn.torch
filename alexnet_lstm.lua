@@ -23,11 +23,17 @@ function AL:__init(opt)
   self.rnns = {}
   self.bn_view_in = {}
   self.bn_view_out = {}
-  self.cnn_view1 = nn.View(N*T,3,I,I)
+  if opt.trainType == 'transfer' then
+    self.cnn_view1 = nn.View(N*T,-1)
+  else
+    self.cnn_view1 = nn.View(N*T,3,I,I)
+  end
   self.cnn_view2 = nn.View(N,T,-1)
   
   self.net:add(self.cnn_view1)
-  self.net:add(createModel(opt.nGPU))
+  local model
+  self.pretrain, model = createModel(opt.nGPU) 
+  self.net:add(model)
   self.net:add(self.cnn_view2)
   for i = 1, self.num_layers do
     local prev_dim = H
@@ -61,6 +67,7 @@ function AL:__init(opt)
 
   self.net:add(self.view1)
   self.net:add(nn.Linear(H, C))
+  self.net:add(nn.LogSoftMax())
   self.net:add(self.view2)
   self.net:cuda()
 end
@@ -68,8 +75,6 @@ end
 
 function AL:updateOutput(input)
   local N, T = input:size(1), input:size(2)
-  self.view1:resetSize(N * T, -1)
-  self.view2:resetSize(N, T, -1)
   
   for _, view_in in ipairs(self.bn_view_in) do
     view_in:resetSize(N * T, -1)
@@ -77,13 +82,25 @@ function AL:updateOutput(input)
   for _, view_out in ipairs(self.bn_view_out) do
     view_out:resetSize(N, T, -1)
   end
-  
-  return self.net:forward(input)
+  self.view1:resetSize(N * T, -1)
+  self.view2:resetSize(N, T, -1)
+  if opt.trainType == 'transfer' then
+    input:resize(N*T, 3, 224, 224)
+    local feats = self.pretrain:forward(input)
+    return self.net:forward(feats)
+  else
+    return self.net:forward(input)
+  end
 end
 
 
 function AL:backward(input, gradOutput, scale)
-  return self.net:backward(input, gradOutput, scale)
+  if opt.trainType == 'transfer' then
+    local feats = self.pretrain:forward(input)
+    return self.net:backward(feats, gradOutput, scale)
+  else
+    return self.net:backward(input, gradOutput, scale)
+  end
 end
 
 

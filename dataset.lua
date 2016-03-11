@@ -140,13 +140,11 @@ function dataset:__init(...)
    end
    ----------------------------------------------------------------------
    -- Options for the GNU find command
-   local extensionList = {'jpg', 'png','JPG','PNG','JPEG', 'ppm', 'PPM', 'bmp', 'BMP'}
-   local extension = '.jpg'
+   local extension = opt.dataType
    local findOptions = ' -iname "*.'
-   -- local findOptions = ' -iname "*.' .. extensionList[1] .. '"'
-   -- for i=2,#extensionList do
-   --    findOptions = findOptions .. ' -o -iname "*.' .. extensionList[i] .. '"'
-   -- end
+   if opt.dataType == 'avi' then
+      findOptions = ' -size +125k ' .. findOptions 
+   end
 
    -- find the image path names
    self.imagePath = torch.CharTensor()  -- path to each image in dataset
@@ -171,18 +169,20 @@ function dataset:__init(...)
       local tmphandle = assert(io.open(tmpfile, 'w'))
       for j, path in ipairs(classPaths[i]) do
          print(path)
-         -- When insert variable it works wrong. Didn't figured out yet.
-         -- for pref=self.depth,600,self.stride do
-         for pref=16,600,8 do
+         if opt.dataType == 'jpg' then
+            -- When insert variable it works wrong. Didn't figured out yet.
+            -- for pref=self.depth,600,self.stride do
+            for pref=16,600,8 do
+               local command = find .. ' "' .. path .. '" ' .. findOptions 
+                  .. string.format("%04d.", pref) .. extension .. '" ' .. ' >>"'
+                  .. classFindFiles[i] .. '" \n'
+               tmphandle:write(command)
+            end
+         elseif opt.dataType == 'avi' then
             local command = find .. ' "' .. path .. '" ' .. findOptions 
-               .. string.format("%04d", pref) .. extension .. '" ' .. ' >>"'
-               .. classFindFiles[i] .. '" \n'
+            .. extension .. '" ' .. ' >>"' .. classFindFiles[i] .. '" \n'
             tmphandle:write(command)
          end
-         --[[local command = find .. ' "' .. path .. '" ' .. findOptions 
-            .. "*" .. extension .. '" ' .. ' >>"'
-            .. classFindFiles[i] .. '" \n'
-         tmphandle:write(command)]]
       end
       io.close(tmphandle)
       os.execute('bash ' .. tmpfile)
@@ -392,6 +392,7 @@ function dataset:sample2(quantity, depth)
    return data, scalarLabels
 end
 
+-- need to check..
 function dataset:get(i1, i2, depth)
    local indices = torch.range(i1, i2);
    local quantity = i2 - i1 + 1;
