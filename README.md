@@ -11,8 +11,12 @@ In the paper [UCF-101](http://crcv.ucf.edu/data/UCF101.php) is used. If you want
 - [torch-rnn](https://github.com/jcjohnson/torch-rnn) (thanks to jcjohnson)
 
 ### Dependencies
-- cunn `luarocks install cunn`
-- cudnn `luarocks intall cudnn`
+- cunn 
+`luarocks install cunn`
+- cudnn
+`luarocks intall cudnn`
+- libffmpeg, ffmpeg
+`luarocks install ffmpeg`
 
 ### Run
 Setting up some parameters in `opt.lua`. And run below command.
