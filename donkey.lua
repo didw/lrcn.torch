@@ -7,7 +7,9 @@
 --  of patent rights can be found in the PATENTS file in the same directory.
 --
 require 'image'
-require 'ffmpeg'
+if opt.dataType == 'avi' then
+   require 'ffmpeg'
+end
 paths.dofile('dataset.lua')
 paths.dofile('util.lua')
 

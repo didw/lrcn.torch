@@ -114,7 +114,7 @@ function testBatch1(inputsCPU, labelsCPU)
          end
       end
    end
-   if batchNumber % 16 == 0 then
+   if batchNumber % 128 == 0 then
       print(('Epoch: Testing: [%d][%d/%d], frame[1]: %.2f, frame[8]: %.2f, frame[16]: %.2f'):format(epoch, batchNumber, (nTest/testStride), (top1_frame[1]*100/batchNumber), (top1_frame[8]*100/batchNumber), (top1_frame[16]*100/batchNumber)))
    end
 end

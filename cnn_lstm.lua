@@ -32,7 +32,15 @@ function AL:__init(opt)
   
   self.net:add(self.cnn_view1)
   local model
-  self.pretrain, model = createModel(opt.nGPU)
+  if opt.trainType == 'none' then
+    if not opt.netType == 'alexnetowtbn_for_lstm' then
+      print 'not supported net type'
+      exit(1)
+    end
+    model = createModel(opt.nGPU)
+  else
+    self.pretrain, model = createModel(opt.nGPU)
+  end
   self.net:add(model)
   self.net:add(self.cnn_view2)
   for i = 1, self.num_layers do
