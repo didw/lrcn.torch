@@ -32,14 +32,18 @@ local sampleSize = {3, opt.cropSize, opt.cropSize}
 
 
 local function loadImage(path)
-   local input = image.load(path, 3, 'float')
+   local input = image.load(path, 3, 'float')*255
    -- find the smaller dimension, and resize it to loadSize (while keeping aspect ratio)
    if input:size(3) < input:size(2) then
       input = image.scale(input, loadSize[2], loadSize[3] * input:size(2) / input:size(3))
    else
       input = image.scale(input, loadSize[2] * input:size(3) / input:size(2), loadSize[3])
    end
-   return input
+   local output = torch.Tensor(#input)
+   output[1] = input[3]
+   output[2] = input[2]
+   output[3] = input[1]
+   return output
 end
 
 local function getPath(path, idx)
@@ -245,7 +249,9 @@ else
    mean = meanEstimate
 
    print('Estimating the std (per-channel, shared for all pixels) over ' .. nSamples .. ' randomly sampled training images')
-   local stdEstimate = {0,0,0}
+   local stdEstimate = {1,1,1}
+   --[[
+   -- do not normalization with std
    for i=1,nSamples do
       local img = trainLoader:sample(1, 1)[1][1]
       for j=1,3 do
@@ -255,6 +261,7 @@ else
    for j=1,3 do
       stdEstimate[j] = stdEstimate[j] / nSamples
    end
+   ]]
    std = stdEstimate
 
    local cache = {}
