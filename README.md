@@ -1,4 +1,4 @@
-## Implementation LSTM on torch
+## Implementation LRCN on torch
 **Paper**: http://arxiv.org/pdf/1411.4389v3.pdf
 Implement 1st task.
 
